@@ -1,0 +1,58 @@
+import java.util.Scanner; 
+public class FirstFitMemoryAllocation { 
+    public static void main(String[] args) { 
+        Scanner sc = new Scanner(System.in); 
+        System.out.print("Enter number of jobs: "); 
+        int jobsize = sc.nextInt(); 
+        System.out.print("Enter number of memory blocks: "); 
+        int blocksize = sc.nextInt(); 
+        int[] job = new int[jobsize]; 
+        int[] block = new int[blocksize]; 
+        int[] flag = new int[blocksize]; 
+        int[] allocation = new int[jobsize]; 
+        double memoryUtilization = 0; 
+        double totalMemory = 0;
+        
+        System.out.println("Enter job sizes:"); 
+        for (int i = 0; i < jobsize; i++) { 
+            System.out.print("Job " + (i + 1) + " size: "); 
+            job[i] = sc.nextInt(); 
+        } 
+        
+        System.out.println("Enter block sizes:"); 
+        for (int i = 0; i < blocksize; i++) { 
+            System.out.print("Block " + (i + 1) + " size: "); 
+            block[i] = sc.nextInt(); 
+            flag[i] = 0; 
+            totalMemory += block[i]; 
+        } 
+        
+        for (int i = 0; i < jobsize; i++) { 
+            allocation[i] = -1; 
+        }
+
+        for (int i = 0; i < jobsize; i++) { 
+            for (int j = 0; j < blocksize; j++) { 
+                if (job[i] <= block[j] && flag[j] == 0) { 
+                    System.out.println("Job " + (i + 1) + " of size " + job[i] + " fitted in Block " + (j + 1) + " of size " + block[j]); 
+                    flag[j] = 1; 
+                    memoryUtilization += job[i]; 
+                    allocation[i] = j; 
+                    break; 
+                } 
+            } 
+        }
+
+        double averageMemoryUtilization = (memoryUtilization / totalMemory) * 100; 
+        System.out.println("\nAverage Memory Utilization: " + averageMemoryUtilization + "%"); 
+
+        System.out.println("\nJob Allocation Results:"); 
+        for (int i = 0; i < jobsize; i++) { 
+            if (allocation[i] != -1) { 
+                System.out.println("Job " + (i + 1) + " allocated to Block " + (allocation[i] + 1)); 
+            } else { 
+                System.out.println("Job " + (i + 1) + " not allocated"); 
+            } 
+        }
+    } 
+}

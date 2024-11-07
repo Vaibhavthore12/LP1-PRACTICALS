@@ -1,0 +1,150 @@
+import java.util.*; 
+
+public class BestFitMemoryAllocation { 
+    public static void main(String[] args) { 
+        Scanner scanner = new Scanner(System.in); 
+        System.out.print("Enter the number of jobs: "); 
+        int jobsize = scanner.nextInt(); 
+        int[] job = new int[jobsize];  
+        
+        System.out.println("Enter the sizes of the jobs:"); 
+        for (int i = 0; i < jobsize; i++) { 
+            System.out.print("Job " + (i + 1) + ": "); 
+            job[i] = scanner.nextInt(); 
+        } 
+        
+        System.out.print("Enter the number of memory blocks: "); 
+        int blocksize = scanner.nextInt(); 
+        int[] block = new int[blocksize]; 
+        int[] flag = new int[blocksize]; 
+        int[] allocation = new int[jobsize]; 
+        
+        System.out.println("Enter the sizes of the memory blocks:"); 
+        for (int i = 0; i < blocksize; i++) { 
+            System.out.print("Block " + (i + 1) + ": "); 
+            block[i] = scanner.nextInt(); 
+            flag[i] = 0; 
+        } 
+        
+        // Initialize allocation array to -1 (indicating no allocation initially)
+        Arrays.fill(allocation, -1);
+
+        int totalMemoryUsed = 0; 
+        int allocatedJobs = 0; 
+
+        // Best Fit Allocation
+        for (int i = 0; i < jobsize; i++) { 
+            int bestIdx = -1; 
+            for (int j = 0; j < blocksize; j++) { 
+                if (job[i] <= block[j] && flag[j] == 0) { 
+                    if (bestIdx == -1 || block[j] < block[bestIdx]) { 
+                        bestIdx = j; 
+                    } 
+                } 
+            } 
+            if (bestIdx != -1) { 
+                allocation[i] = bestIdx; 
+                flag[bestIdx] = 1; 
+                totalMemoryUsed += job[i]; 
+                allocatedJobs++; 
+                System.out.println("Job " + (i + 1) + " of size " + job[i] + " is allocated to block " + (bestIdx + 1)); 
+            } else { 
+                allocation[i] = -1; 
+                System.out.println("Job " + (i + 1) + " of size " + job[i] + " could not be allocated."); 
+            } 
+        } 
+
+        int totalMemory = 0; 
+        for (int i = 0; i < blocksize; i++) { 
+            totalMemory += block[i]; 
+        } 
+
+        double averageMemoryUtilization = ((double) totalMemoryUsed / totalMemory) * 100; 
+
+        System.out.println("\nMemory Utilization:"); 
+        System.out.printf("Total memory utilized: %d/%d\n", totalMemoryUsed, totalMemory); 
+        System.out.printf("Average memory utilization: %.2f%%\n", averageMemoryUtilization); 
+    } 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+________________________________________________________________________________________________________________________________
+
+Optimized Code
+
+import java.util.*;
+
+public class BestFitMemoryAllocation { 
+    public static void main(String[] args) { 
+        Scanner scanner = new Scanner(System.in); 
+        System.out.print("Enter the number of jobs: "); 
+        int jobsize = scanner.nextInt(); 
+        int[] job = new int[jobsize];  
+        
+        System.out.println("Enter the sizes of the jobs:");
+        for (int i = 0; i < jobsize; i++) { 
+            System.out.print("Job " + (i + 1) + ": "); 
+            job[i] = scanner.nextInt(); 
+        } 
+        
+        System.out.print("Enter the number of memory blocks: "); 
+        int blocksize = scanner.nextInt(); 
+        int[] block = new int[blocksize]; 
+        boolean[] isAllocated = new boolean[blocksize];  // Tracks block allocation status
+        int[] allocation = new int[jobsize];  // Stores allocation status of each job
+
+        System.out.println("Enter the sizes of the memory blocks:");
+        for (int i = 0; i < blocksize; i++) { 
+            System.out.print("Block " + (i + 1) + ": "); 
+            block[i] = scanner.nextInt(); 
+        } 
+        
+        // Initialize allocation array to -1 (indicating no allocation initially)
+        Arrays.fill(allocation, -1);
+
+        int totalMemoryUsed = 0; 
+
+        // Best Fit Allocation
+        for (int i = 0; i < jobsize; i++) { 
+            int bestIdx = -1; 
+            for (int j = 0; j < blocksize; j++) { 
+                if (job[i] <= block[j] && !isAllocated[j]) { 
+                    if (bestIdx == -1 || block[j] < block[bestIdx]) { 
+                        bestIdx = j; 
+                    } 
+                } 
+            } 
+            if (bestIdx != -1) { 
+                allocation[i] = bestIdx; 
+                isAllocated[bestIdx] = true; 
+                totalMemoryUsed += job[i]; 
+                System.out.println("Job " + (i + 1) + " of size " + job[i] + " is allocated to block " + (bestIdx + 1)); 
+            } else { 
+                System.out.println("Job " + (i + 1) + " of size " + job[i] + " could not be allocated."); 
+            } 
+        } 
+
+        // Calculate total memory in all blocks
+        int totalMemory = Arrays.stream(block).sum();
+
+        // Calculate memory utilization
+        double averageMemoryUtilization = ((double) totalMemoryUsed / totalMemory) * 100; 
+
+        System.out.println("\nMemory Utilization:"); 
+        System.out.printf("Total memory utilized: %d/%d\n", totalMemoryUsed, totalMemory); 
+        System.out.printf("Average memory utilization: %.2f%%\n", averageMemoryUtilization); 
+        
+        scanner.close();
+    } 
+}
+
