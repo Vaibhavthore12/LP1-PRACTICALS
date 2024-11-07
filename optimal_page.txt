@@ -1,0 +1,74 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class OptimalPaging {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of pages: ");
+        int numPages = scanner.nextInt();
+
+        System.out.println("Enter the page values:");
+        int[] pages = new int[numPages];
+        for (int i = 0; i < numPages; i++) {
+            pages[i] = scanner.nextInt();
+        }
+
+        System.out.print("Enter the number of frames: ");
+        int numFrames = scanner.nextInt();
+
+        ArrayList<Integer> frameList = new ArrayList<>(numFrames);
+        int pageFaults = 0;
+
+        for (int i = 0; i < numPages; i++) {
+            int currentPage = pages[i];
+
+            // Check if page is already in frames (page hit)
+            if (!frameList.contains(currentPage)) {
+                // Page fault occurred
+                pageFaults++;
+
+                if (frameList.size() < numFrames) {
+                    // Space available in frames, add the page directly
+                    frameList.add(currentPage);
+                } else {
+                    // No space available, find the page to replace
+                    int pageToReplaceIndex = findOptimalPageToReplace(frameList, pages, i + 1);
+                    frameList.set(pageToReplaceIndex, currentPage);
+                }
+            }
+
+            System.out.print("Frame contents after page " + currentPage + ": ");
+            for (Integer framePage : frameList) {
+                System.out.print(framePage + " ");
+            }
+            System.out.println();
+        }
+
+        System.out.println("Total Page Faults = " + pageFaults);
+    }
+
+    // Function to find the optimal page to replace
+    private static int findOptimalPageToReplace(ArrayList<Integer> frameList, int[] pages, int currentIndex) {
+        int farthestIndex = -1;
+        int pageToReplaceIndex = -1;
+
+        for (int i = 0; i < frameList.size(); i++) {
+            int page = frameList.get(i);
+            int j = currentIndex;
+
+            // Find the next occurrence of the page
+            while (j < pages.length && pages[j] != page) {
+                j++;
+            }
+
+            // Check if this page will not be used for the longest period
+            if (j > farthestIndex) {
+                farthestIndex = j;
+                pageToReplaceIndex = i;
+            }
+        }
+
+        return pageToReplaceIndex;
+    }
+}
